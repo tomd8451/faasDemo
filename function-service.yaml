@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mailfunction-service
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: queue-port
+  selector:
+    serving.knative.dev/revision: mail-00001
+  type: LoadBalancer
+
