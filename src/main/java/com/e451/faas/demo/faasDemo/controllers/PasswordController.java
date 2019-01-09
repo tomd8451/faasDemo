@@ -39,30 +39,31 @@ public class PasswordController {
   @PostMapping(value = "/forgot")
   public ModelAndView processForgotPasswordPage(ModelAndView modelAndView, @RequestParam("email") String userEmail, HttpServletRequest request) {
 
-    Optional<User> optional = userService.findUserByEmail(userEmail);
-
-    if (!optional.isPresent()) {
-      modelAndView.addObject("errorMessage", "No account for that e-mail address.");
-    } else {
-
-      User user = optional.get();
-      user.setResetToken(UUID.randomUUID().toString());
-
-      userService.save(user);
-
-      String appUrl = request.getScheme() + "://" + request.getServerName() + ":8080";
-
+//    Optional<User> optional = userService.findUserByEmail(userEmail);
+//
+//    if (!optional.isPresent()) {
+//      modelAndView.addObject("errorMessage", "No account for that e-mail address.");
+//    } else {
+//
+//      User user = optional.get();
+//      user.setResetToken(UUID.randomUUID().toString());
+//
+//      userService.save(user);
+//
+      String appUrl = request.getScheme() + "://" + request.getServerName();// + ":8080";
+//
       SimpleMailMessage passwordResetEmail = new SimpleMailMessage();
       passwordResetEmail.setFrom("support@SuperFaaSApp.com");
-      passwordResetEmail.setTo(user.getEmail());
+      passwordResetEmail.setTo(userEmail);
       passwordResetEmail.setSubject("FaaS App Reset Request");
       passwordResetEmail.setText("To reset your password, click the link below:\n" + appUrl
-          + "/reset?token=" + user.getResetToken());
+          + "/reset?token=" + UUID.randomUUID().toString());
 
-      emailService.sendEmail(passwordResetEmail);
+      String updatedPassword = emailService.sendEmail(passwordResetEmail);
 
+      modelAndView.addObject("updatedPassword", updatedPassword);
       modelAndView.addObject("successMessage", "A password reset link has been sent to " + userEmail);
-    }
+//    }
 
     modelAndView.setViewName("login");
     return modelAndView;
